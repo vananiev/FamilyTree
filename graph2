@@ -1,0 +1,93 @@
+#ifndef _GRAPH
+#define _GRAPH
+#include <vector.h>
+#include<People.h>
+template <class T> class Graph{
+public:
+vector <T> ferst;
+vector <T> second;
+vector <string> link;
+Graph(){Clear();};
+Graph(T f,T s,string l){add(f,s,l);};
+void Clear(){ferst.clear();second.clear();link.clear();}
+void add(T f,T s,string l) {ferst.push_back(f);second.push_back(s);link.push_back(l);return;};
+int count(){return ferst.capacity();};
+vector<T> find_pare(T& obj, vector<string> &ResultLinks);
+vector<T> find(T& obj,vector<T> (*func)(T &,vector<T>& ,vector<T>&)) {return delete_duplicate((*func)(obj,ferst,second));};
+vector<T> & delete_duplicate(vector<T> &v);
+int modify(T& Old,T& New);
+friend ostream &operator<<(ostream &stream,Graph<T> obj);
+friend istream &operator>>(istream &stream,Graph<T> &obj);
+};
+//****************************************************************************
+template <class T> vector<T> Graph<T>::find_pare(T& obj,vector<string> &ResultLinks=NULL)
+{
+        vector<T> result;
+//поиск в ferst
+        for(int i=0;i<ferst.size();i++)
+                 if(ferst[i]==obj)
+                        {result.push_back(second[i]);
+                        (ResultLinks).push_back(link[i]);}
+
+//поиск second
+        for(int i=0;i<second.size();i++)
+                 if(second[i]==obj)
+                        {result.push_back(ferst[i]);
+                        (ResultLinks).push_back("!"+link[i]);}
+        return result;
+};
+//****************************************************************************
+template<class T> vector<T> & Graph<T>::delete_duplicate(vector<T> &v)
+{
+       vector<People>::iterator p=v.begin();
+       vector<People>::iterator t;
+       int l=v.size();
+        for(register int i=0;i<v.size();i++)
+                for(register int j=i+1;j<v.size();j++)
+                          if(v[i]==v[j]){
+                                t=p+j;
+                                v.erase(t);
+                                j--;}
+        return v;
+}
+//****************************************************************************
+ostream &operator<<(ostream &stream,Graph<People> obj)
+{
+        stream<<obj.ferst.size()<<" ";
+        for(int i=0;i<obj.ferst.size();i++)
+                stream<<obj.ferst[i]<<" "<<obj.second[i]<<" "<<obj.link[i];
+        return stream;
+};
+//****************************************************************************
+istream &operator>> (istream &stream,Graph<People> &obj)
+{
+        obj.Clear();
+        int num=0,i=0;
+        stream>>num;
+        i=0;
+        while(i<num)
+                {
+                People ppl1,ppl2;
+                string s;
+                stream>>ppl1;
+                stream>>ppl2;
+                stream>>s;
+                obj.add(ppl1,ppl2,s);
+                i++;
+                };
+        return stream;
+};
+//****************************************************************************
+template<class T>int Graph<T>::modify(T& Old,T& New)
+{
+        int cnt=0;
+        //поиск в ferst
+        for(int i=0;i<ferst.size();i++)
+                 if(ferst[i]==Old) {ferst[i]=New;cnt++;};
+//поиск second
+        for(int i=0;i<second.size();i++)
+                 if(second[i]==Old) {second[i]=New;cnt++;};
+        return cnt;
+};
+//****************************************************************************
+#endif
